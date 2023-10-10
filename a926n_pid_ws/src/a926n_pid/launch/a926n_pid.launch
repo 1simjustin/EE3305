@@ -2,7 +2,7 @@
 <!--
     EE3305/ME3243
     Name: Sim Justin
-    NUSNET ID: A0257926N
+    NUSNET ID: E0968898
 -->
 
 <launch>
@@ -20,5 +20,8 @@
     <arg name="yaw" default="0"/>
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro"/>
     <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model turtlebot3_$(arg model) -x $(arg x) -y $(arg y) -Y $(arg yaw) -param robot_description"/>
+
+    <node pkg="a926n_pid" type="a926n_pid" name="pid_control_node" output="screen"/>
+    <rosparam command="load" file="$(arg student_pkg_path)/config/config.yaml"/>
 
 </launch>
