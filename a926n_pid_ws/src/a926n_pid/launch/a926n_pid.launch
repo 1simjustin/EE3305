@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+    EE3305/ME3243
+    Name: Sim Justin
+    NUSNET ID: A0257926N
+-->
+
+<launch>
+    <!-- Launch the world in Gazebo. -->
+    <arg name="student_pkg_path" value="$(find a926n_pid)"/>
+    <arg name="world_name" default="$(arg student_pkg_path)/worlds/singlepillar.world"/>
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(arg world_name)"/>
+    </include>
+
+    <!-- Spawn turtle -->
+    <arg name="model" default="burger"/>
+    <arg name="x" default="0"/>
+    <arg name="y" default="0"/>
+    <arg name="yaw" default="0"/>
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro"/>
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model turtlebot3_$(arg model) -x $(arg x) -y $(arg y) -Y $(arg yaw) -param robot_description"/>
+
+</launch>
