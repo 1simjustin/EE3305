@@ -77,13 +77,16 @@ void BotControl::pidAlgorithm(){
 	// ENTER YOUR CODE HERE
 
 	// define the integral term
-
+	I_forward_ += error_forward_ * dt;
+	I_angle_ += error_angle_ * dt;
 
 	// define the derivative term
-
+	D_forward_ = (error_forward_ - error_forward_prev_) / dt;
+	D_angle_ = (error_angle_ - error_angle_prev_) / dt;
 
 	// define the PID control term
-
+	trans_forward = Kp_f * error_forward_ + Ki_f * I_forward_ + Kd_f * D_forward_;
+	trans_angle = Kp_a * error_angle_ + Ki_a * I_angle_ + Kd_a * D_angle_;
 
 	// END YOUR CODE HERE
 
