@@ -35,6 +35,15 @@ BotControl::BotControl(ros::NodeHandle& nh) : nodehandle_(nh){
 	D_forward_ = 0;
 	D_angle_ = 0;
 
+	// FOR DIAGNOSTICS
+	// 1 for velocity +ve, -1 for velocity -ve
+	curr_state_a = 1; 
+	curr_state_f = 1;
+	minima_a = 0;
+	minima_f = 0;
+	maxima_a = 0;
+	maxima_f = 0;
+
 	ROS_INFO("Node Initialized");
 }
 
@@ -71,14 +80,20 @@ void BotControl::pidAlgorithm(){
 	error_angle_ = atan2(Dy, Dx) - ang_z_;
     
 	// regularize the error_angle_ within [-PI, PI]
-	if(error_angle_ < -M_PI) error_angle_ += 2*M_PI;
-	if(error_angle_ > M_PI) error_angle_ -= 2*M_PI;
+	while (error_angle_ < -M_PI) error_angle_ += 2*M_PI;
+	while (error_angle_ > M_PI) error_angle_ -= 2*M_PI;
 
 	// ENTER YOUR CODE HERE
 
 	// define the integral term
-	I_forward_ += error_forward_ * dt;
-	I_angle_ += error_angle_ * dt;
+
+	// Classical Riemann Sum
+	// I_forward_ += error_forward_ * dt;
+	// I_angle_ += error_angle_ * dt;
+
+	// Trapezoidal Rieman Sum
+	I_forward_ += (error_forward_ + error_forward_prev_) * dt / 2;
+	I_angle_ += (error_angle_ + error_angle_prev_) * dt / 2;
 
 	// define the derivative term
 	D_forward_ = (error_forward_ - error_forward_prev_) / dt;
@@ -90,6 +105,31 @@ void BotControl::pidAlgorithm(){
 
 	// END YOUR CODE HERE
 
+	// FOR DIAGNOSTICS
+	// Angular
+	if (curr_state_a == 1 && trans_angle_ < 0) {
+		curr_state_a = -1;
+		minima_a = error_angle_;
+		ROS_INFO("Angle Velocity Negative, Minima Error: %f", minima_a);
+	}
+	if (curr_state_a == -1 && trans_angle_ > 0) {
+		curr_state_a = 1;
+		maxima_a = error_angle_;
+		ROS_INFO("Angle Velocity Positive, Maxima Error: %f", maxima_a);
+	}
+
+	// Linear
+	if (curr_state_f == 1 && trans_forward_ < 0) {
+		curr_state_f = -1;
+		minima_f = error_forward_;
+		ROS_INFO("Forward Velocity Negative, Minima Error: %f", minima_f);
+	}
+	if (curr_state_f == -1 && trans_forward_ > 0) {
+		curr_state_f = 1;
+		maxima_f = error_forward_;
+		ROS_INFO("Forward Velocity Positive, Maxima Error: %f", maxima_f);
+	}
+
 	// limiting trans_angle
 	if (trans_angle_ > M_PI)
       trans_angle_ = M_PI;
@@ -100,11 +140,12 @@ void BotControl::pidAlgorithm(){
 	if(trans_forward_ > 0.22) trans_forward_ = 0.22;
 	if(trans_forward_ < -0.22) trans_forward_ = -0.22;
 
+	// UNCOMMENT BELOW
 
-	ROS_INFO("1----Forward Velocity: %f; Angle Velocity: %f; Orientation_error: %f, Linear_error: %f",  
-		trans_forward_, trans_angle_, error_angle_, error_forward_);
-	ROS_INFO("Pillar x: %f; Pillar y: %f; Pos x: %f, Pos y: %f",  
-		pillar_x, pillar_y, pos_x_, pos_y_);
+	// ROS_INFO("1----Forward Velocity: %f; Angle Velocity: %f; Orientation_error: %f, Linear_error: %f",  
+	// 	trans_forward_, trans_angle_, error_angle_, error_forward_);
+	// ROS_INFO("Pillar x: %f; Pillar y: %f; Pos x: %f, Pos y: %f",  
+	// 	pillar_x, pillar_y, pos_x_, pos_y_);
 
 	// ROS_INFO("Forward Velocity: %f; Angle Velocity: %f; Orientation_error: %f, Distance: %f",  //#
 	//	trans_forward_, trans_angle_, error_angle_, scan_range_);

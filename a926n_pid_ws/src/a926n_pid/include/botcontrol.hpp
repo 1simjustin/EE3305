@@ -43,6 +43,10 @@ private:
 	double I_forward_, I_angle_; // integral part
 	double D_forward_, D_angle_; // derivative part
 
+	// FOR DIAGNOSTICS
+	int curr_state_a, curr_state_f; // 1 for approaching target, -1 for leaving target
+	double minima_a, minima_f, maxima_a, maxima_f;
+
 	void odomCallBack(const nav_msgs::OdometryConstPtr& odomMsg);
     //	void scanCallBack(const sensor_msgs::LaserScan::ConstPtr& scanMsg);
 	//  void trueCallBack(const gazebo_msgs::LinkStates& msg);
