@@ -107,24 +107,24 @@ void BotControl::pidAlgorithm(){
 
 	// FOR DIAGNOSTICS
 	// Angular
-	if (curr_state_a == 1 && trans_angle_ < 0) {
+	if (curr_state_a == 1 && trans_angle_ <= 0) {
 		curr_state_a = -1;
 		minima_a = error_angle_;
 		ROS_INFO("Angle Velocity Negative, Minima Error: %f", minima_a);
 	}
-	if (curr_state_a == -1 && trans_angle_ > 0) {
+	if (curr_state_a == -1 && trans_angle_ >= 0) {
 		curr_state_a = 1;
 		maxima_a = error_angle_;
 		ROS_INFO("Angle Velocity Positive, Maxima Error: %f", maxima_a);
 	}
 
 	// Linear
-	if (curr_state_f == 1 && trans_forward_ < 0) {
+	if (curr_state_f == 1 && trans_forward_ <= 0) {
 		curr_state_f = -1;
 		minima_f = error_forward_;
 		ROS_INFO("Forward Velocity Negative, Minima Error: %f", minima_f);
 	}
-	if (curr_state_f == -1 && trans_forward_ > 0) {
+	if (curr_state_f == -1 && trans_forward_ >= 0) {
 		curr_state_f = 1;
 		maxima_f = error_forward_;
 		ROS_INFO("Forward Velocity Positive, Maxima Error: %f", maxima_f);
