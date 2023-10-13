@@ -115,30 +115,30 @@ void BotControl::pidAlgorithm(){
 	// END YOUR CODE HERE
 
 	// // FOR DIAGNOSTICS
-	// // Angular
-	// if (curr_state_a == 1 && trans_angle_ <= 0) {
-	// 	curr_state_a = -1;
-	// 	minima_a = error_angle_;
-	// 	ROS_INFO("Angle Velocity Negative, Minima Error: %f", minima_a);
-	// }
-	// if (curr_state_a == -1 && trans_angle_ >= 0) {
-	// 	curr_state_a = 1;
-	// 	maxima_a = error_angle_;
-	// 	ROS_INFO("Angle Velocity Positive, Maxima Error: %f", maxima_a);
-	// }
+	// Angular
+	if (curr_state_a == 1 && trans_angle_ <= 0) {
+		curr_state_a = -1;
+		minima_a = error_angle_;
+		// ROS_INFO("Angle Velocity Negative, Minima Error: %f", minima_a);
+	}
+	if (curr_state_a == -1 && trans_angle_ >= 0) {
+		curr_state_a = 1;
+		maxima_a = error_angle_;
+		// ROS_INFO("Angle Velocity Positive, Maxima Error: %f", maxima_a);
+	}
 	// ROS_INFO("Ang: %f of %f", atan2(Dy, Dx), ang_z_);
 
-	// // Linear
-	// if (curr_state_f == 1 && trans_forward_ <= 0) {
-	// 	curr_state_f = -1;
-	// 	minima_f = error_forward_;
-	// 	ROS_INFO("Forward Velocity Negative, Minima Error: %f", minima_f);
-	// }
-	// if (curr_state_f == -1 && trans_forward_ >= 0) {
-	// 	curr_state_f = 1;
-	// 	maxima_f = error_forward_;
-	// 	ROS_INFO("Forward Velocity Positive, Maxima Error: %f", maxima_f);
-	// }
+	// Linear
+	if (curr_state_f == 1 && trans_forward_ <= 0) {
+		curr_state_f = -1;
+		minima_f = error_forward_;
+		// ROS_INFO("Forward Velocity Negative, Minima Error: %f", minima_f);
+	}
+	if (curr_state_f == -1 && trans_forward_ >= 0) {
+		curr_state_f = 1;
+		maxima_f = error_forward_;
+		// ROS_INFO("Forward Velocity Positive, Maxima Error: %f", maxima_f);
+	}
 	// ROS_INFO("Lin: %f of %f", sqrt(Dx*Dx + Dy*Dy), target_distance);
 
 	// limiting trans_angle
@@ -148,8 +148,10 @@ void BotControl::pidAlgorithm(){
       trans_angle_ = -ang_max;
 
 	// set limit
-	if(trans_forward_ > lin_max) trans_forward_ = lin_max;
-	if(trans_forward_ < -lin_max) trans_forward_ = -lin_max;
+	if(trans_forward_ > lin_max)
+		trans_forward_ = lin_max;
+	if(trans_forward_ < -lin_max)
+		trans_forward_ = -lin_max;
 
 	// UNCOMMENT BELOW
 
