@@ -35,6 +35,9 @@ BotControl::BotControl(ros::NodeHandle& nh) : nodehandle_(nh){
 	D_forward_ = 0;
 	D_angle_ = 0;
 
+	lin_max = 0.22;
+	ang_max = M_PI;
+
 	// FOR DIAGNOSTICS
 	// 1 for velocity +ve, -1 for velocity -ve
 	curr_state_a = 1; 
@@ -83,6 +86,9 @@ void BotControl::pidAlgorithm(){
 	while (error_angle_ < -M_PI) error_angle_ += 2*M_PI;
 	while (error_angle_ > M_PI) error_angle_ -= 2*M_PI;
 
+	double P_term_f = Kp_f * error_forward_;
+	double P_term_a = Kp_a * error_angle_;
+
 	// ENTER YOUR CODE HERE
 
 	// define the integral term
@@ -92,65 +98,70 @@ void BotControl::pidAlgorithm(){
 	// I_angle_ += error_angle_ * dt;
 
 	// Trapezoidal Rieman Sum
-	I_forward_ += (error_forward_ + error_forward_prev_) * dt / 2;
-	I_angle_ += (error_angle_ + error_angle_prev_) * dt / 2;
+	// We only apply integrator in the controllable region (Conditional Integration)
+	if (P_term_f > -lin_max && P_term_f < lin_max)
+		I_forward_ += (error_forward_ + error_forward_prev_) * dt / 2;
+	if (Kp_a * P_term_a > -ang_max && Kp_a * P_term_a < ang_max)
+		I_angle_ += (error_angle_ + error_angle_prev_) * dt / 2;
 
 	// define the derivative term
 	D_forward_ = (error_forward_ - error_forward_prev_) / dt;
 	D_angle_ = (error_angle_ - error_angle_prev_) / dt;
 
 	// define the PID control term
-	trans_forward = Kp_f * error_forward_ + Ki_f * I_forward_ + Kd_f * D_forward_;
-	trans_angle = Kp_a * error_angle_ + Ki_a * I_angle_ + Kd_a * D_angle_;
+	trans_forward_ = P_term_f + Ki_f * I_forward_ + Kd_f * D_forward_;
+	trans_angle_ = P_term_a + Ki_a * I_angle_ + Kd_a * D_angle_;
 
 	// END YOUR CODE HERE
 
-	// FOR DIAGNOSTICS
-	// Angular
-	if (curr_state_a == 1 && trans_angle_ <= 0) {
-		curr_state_a = -1;
-		minima_a = error_angle_;
-		ROS_INFO("Angle Velocity Negative, Minima Error: %f", minima_a);
-	}
-	if (curr_state_a == -1 && trans_angle_ >= 0) {
-		curr_state_a = 1;
-		maxima_a = error_angle_;
-		ROS_INFO("Angle Velocity Positive, Maxima Error: %f", maxima_a);
-	}
+	// // FOR DIAGNOSTICS
+	// // Angular
+	// if (curr_state_a == 1 && trans_angle_ <= 0) {
+	// 	curr_state_a = -1;
+	// 	minima_a = error_angle_;
+	// 	ROS_INFO("Angle Velocity Negative, Minima Error: %f", minima_a);
+	// }
+	// if (curr_state_a == -1 && trans_angle_ >= 0) {
+	// 	curr_state_a = 1;
+	// 	maxima_a = error_angle_;
+	// 	ROS_INFO("Angle Velocity Positive, Maxima Error: %f", maxima_a);
+	// }
+	// ROS_INFO("Ang: %f of %f", atan2(Dy, Dx), ang_z_);
 
-	// Linear
-	if (curr_state_f == 1 && trans_forward_ <= 0) {
-		curr_state_f = -1;
-		minima_f = error_forward_;
-		ROS_INFO("Forward Velocity Negative, Minima Error: %f", minima_f);
-	}
-	if (curr_state_f == -1 && trans_forward_ >= 0) {
-		curr_state_f = 1;
-		maxima_f = error_forward_;
-		ROS_INFO("Forward Velocity Positive, Maxima Error: %f", maxima_f);
-	}
+	// // Linear
+	// if (curr_state_f == 1 && trans_forward_ <= 0) {
+	// 	curr_state_f = -1;
+	// 	minima_f = error_forward_;
+	// 	ROS_INFO("Forward Velocity Negative, Minima Error: %f", minima_f);
+	// }
+	// if (curr_state_f == -1 && trans_forward_ >= 0) {
+	// 	curr_state_f = 1;
+	// 	maxima_f = error_forward_;
+	// 	ROS_INFO("Forward Velocity Positive, Maxima Error: %f", maxima_f);
+	// }
+	// ROS_INFO("Lin: %f of %f", sqrt(Dx*Dx + Dy*Dy), target_distance);
 
 	// limiting trans_angle
-	if (trans_angle_ > M_PI)
-      trans_angle_ = M_PI;
-    if (trans_angle_ < -M_PI)
-      trans_angle_ = -M_PI;
+	if (trans_angle_ > ang_max)
+      trans_angle_ = ang_max;
+    if (trans_angle_ < -ang_max)
+      trans_angle_ = -ang_max;
 
 	// set limit
-	if(trans_forward_ > 0.22) trans_forward_ = 0.22;
-	if(trans_forward_ < -0.22) trans_forward_ = -0.22;
+	if(trans_forward_ > lin_max) trans_forward_ = lin_max;
+	if(trans_forward_ < -lin_max) trans_forward_ = -lin_max;
 
 	// UNCOMMENT BELOW
 
-	// ROS_INFO("1----Forward Velocity: %f; Angle Velocity: %f; Orientation_error: %f, Linear_error: %f",  
-	// 	trans_forward_, trans_angle_, error_angle_, error_forward_);
-	// ROS_INFO("Pillar x: %f; Pillar y: %f; Pos x: %f, Pos y: %f",  
-	// 	pillar_x, pillar_y, pos_x_, pos_y_);
+	ROS_INFO("1----Forward Velocity: %f; Angle Velocity: %f; Orientation_error: %f, Linear_error: %f",  
+		trans_forward_, trans_angle_, error_angle_, error_forward_);
+	ROS_INFO("Pillar x: %f; Pillar y: %f; Pos x: %f, Pos y: %f",  
+		pillar_x, pillar_y, pos_x_, pos_y_);
 
 	// ROS_INFO("Forward Velocity: %f; Angle Velocity: %f; Orientation_error: %f, Distance: %f",  //#
-	//	trans_forward_, trans_angle_, error_angle_, scan_range_);
+	// 	trans_forward_, trans_angle_, error_angle_, scan_range_);
  	// ROS_INFO("2----Forward Velocity: %f; Angle Velocity: %f; Orientation_error: %f, Linear_error: %f",  
-		// trans_forward_, trans_angle_, error_angle_, error_forward_);
+	// 	trans_forward_, trans_angle_, error_angle_, error_forward_);
 
 
 	//publish all

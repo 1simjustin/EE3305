@@ -7,13 +7,15 @@ dt: 0.1
 target_distance: 1.1
 target_angle: 0
 
-Kp_f: 0
-Ki_f: 0
-Kd_f: 0
+# Ku 50 Tu 2
+Kp_f: 15
+Ki_f: 15
+Kd_f: 8
 
-Kp_a: 0
-Ki_a: 0
-Kd_a: 0
+# Ku 10 Tu 3.2
+Kp_a: 4.25
+Ki_a: 3
+Kd_a: 2
 
 pillar_x: 7.5
 pillar_y: 4

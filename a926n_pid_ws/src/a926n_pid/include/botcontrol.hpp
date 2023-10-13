@@ -38,6 +38,9 @@ private:
 	geometry_msgs::Twist vel_cmd_; // control the robot msgs
 	double trans_forward_, trans_angle_; // pid output
 
+	// Physical Specs
+	double lin_max, ang_max;
+
 	// PID related
 	double error_forward_, error_angle_, error_forward_prev_, error_angle_prev_;
 	double I_forward_, I_angle_; // integral part
