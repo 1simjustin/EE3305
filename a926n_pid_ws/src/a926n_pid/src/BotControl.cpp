@@ -52,7 +52,7 @@ BotControl::BotControl(ros::NodeHandle& nh) : nodehandle_(nh){
 	maxima_a = 0;
 	maxima_f = 0;
 	t = 0;
-	Kpt_a = 0;
+	Kpt_a = 5;
 	Kpt_f = 0;
 
 	ROS_INFO("Node Initialized");
