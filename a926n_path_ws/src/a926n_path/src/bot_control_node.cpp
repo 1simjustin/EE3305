@@ -1,6 +1,6 @@
 // EE3305/ME3243
-// Name: YOUR NAME
-// NUSNET ID: YOUR NUSNET ID
+// Name: Sim Justin
+// NUSNET ID: E0968898
 
 #include <ros/ros.h>
 #include <std_msgs/Float64MultiArray.h>
