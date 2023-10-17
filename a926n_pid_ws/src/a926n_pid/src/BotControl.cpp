@@ -25,11 +25,6 @@ BotControl::BotControl(ros::NodeHandle& nh) : nodehandle_(nh){
 	control_signal_forward_pub_ = nodehandle_.advertise<std_msgs::Float32>("/control_signal_forward", 1);
 	control_signal_angle_pub_ = nodehandle_.advertise<std_msgs::Float32>("/control_signal_angle", 1);
 
-	minima_a_pub = nodehandle_.advertise<std_msgs::Float32>("/minima_a", 1);
-	minima_f_pub = nodehandle_.advertise<std_msgs::Float32>("/minima_f", 1);
-	maxima_a_pub = nodehandle_.advertise<std_msgs::Float32>("/maxima_a", 1);
-	maxima_f_pub = nodehandle_.advertise<std_msgs::Float32>("/maxima_f", 1);
-
 	//initialize variables
 	error_forward_ = 0;
 	error_angle_ = 0;
@@ -42,18 +37,6 @@ BotControl::BotControl(ros::NodeHandle& nh) : nodehandle_(nh){
 
 	lin_max = 0.22;
 	ang_max = M_PI;
-
-	// FOR DIAGNOSTICS
-	// 1 for velocity +ve, -1 for velocity -ve
-	curr_state_a = 1; 
-	curr_state_f = 1;
-	minima_a = 0;
-	minima_f = 0;
-	maxima_a = 0;
-	maxima_f = 0;
-	t = 0;
-	Kpt_a = 5;
-	Kpt_f = 0;
 
 	ROS_INFO("Node Initialized");
 }
@@ -79,12 +62,6 @@ void BotControl::pidAlgorithm(){
 	std_msgs::Float32 angle_error;
 	std_msgs::Float32 linear_velocity; // command
 	std_msgs::Float32 angle_velocity; // command
-
-	// Autotuning
-	if (t > 50) {
-		Kpt_a += 0.5;
-		t = 0;
-	}
 
     double Dx = pillar_x - pos_x_; // pos_x_ from odom (true sim. position)
     double Dy = pillar_y - pos_y_; // pos_y_ from odom (true sim. position)
@@ -123,40 +100,10 @@ void BotControl::pidAlgorithm(){
 	D_angle_ = (error_angle_ - error_angle_prev_) / dt;
 
 	// define the PID control term
-	// trans_forward_ = P_term_f + Ki_f * I_forward_ + Kd_f * D_forward_;
-	// trans_angle_ = P_term_a + Ki_a * I_angle_ + Kd_a * D_angle_;
-	// FOR DIAGNOSTICS
-	trans_forward_ = Kpt_f * error_forward_;
-	trans_angle_ = Kpt_a * error_angle_;
+	trans_forward_ = P_term_f + Ki_f * I_forward_ + Kd_f * D_forward_;
+	trans_angle_ = P_term_a + Ki_a * I_angle_ + Kd_a * D_angle_;
 
 	// END YOUR CODE HERE
-
-	// // FOR DIAGNOSTICS
-	// Angular
-	if (curr_state_a == 1 && trans_angle_ <= 0) {
-		curr_state_a = -1;
-		minima_a = error_angle_;
-		// ROS_INFO("Angle Velocity Negative, Minima Error: %f", minima_a);
-	}
-	if (curr_state_a == -1 && trans_angle_ >= 0) {
-		curr_state_a = 1;
-		maxima_a = error_angle_;
-		// ROS_INFO("Angle Velocity Positive, Maxima Error: %f", maxima_a);
-	}
-	// ROS_INFO("Ang: %f of %f", atan2(Dy, Dx), ang_z_);
-
-	// Linear
-	if (curr_state_f == 1 && trans_forward_ <= 0) {
-		curr_state_f = -1;
-		minima_f = error_forward_;
-		// ROS_INFO("Forward Velocity Negative, Minima Error: %f", minima_f);
-	}
-	if (curr_state_f == -1 && trans_forward_ >= 0) {
-		curr_state_f = 1;
-		maxima_f = error_forward_;
-		// ROS_INFO("Forward Velocity Positive, Maxima Error: %f", maxima_f);
-	}
-	// ROS_INFO("Lin: %f of %f", sqrt(Dx*Dx + Dy*Dy), target_distance);
 
 	// limiting trans_angle
 	if (trans_angle_ > ang_max)
@@ -169,8 +116,6 @@ void BotControl::pidAlgorithm(){
 		trans_forward_ = lin_max;
 	if(trans_forward_ < -lin_max)
 		trans_forward_ = -lin_max;
-
-	// UNCOMMENT BELOW
 
 	ROS_INFO("1----Forward Velocity: %f; Angle Velocity: %f; Orientation_error: %f, Linear_error: %f",  
 		trans_forward_, trans_angle_, error_angle_, error_forward_);
@@ -199,9 +144,6 @@ void BotControl::pidAlgorithm(){
 
 	angle_velocity.data = trans_angle_;
 	control_signal_angle_pub_.publish(angle_velocity);
-
-	t++;
-
 }
 
 void BotControl::spin(){

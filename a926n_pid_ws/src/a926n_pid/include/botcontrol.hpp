@@ -30,11 +30,6 @@ private:
 	ros::Publisher control_signal_forward_pub_; // log
 	ros::Publisher control_signal_angle_pub_;
 
-	ros::Publisher minima_a_pub;
-	ros::Publisher minima_f_pub;
-	ros::Publisher maxima_a_pub;
-	ros::Publisher maxima_f_pub;
-
 	double pos_x_, pos_y_; //# moved q_z_ to callback
 	double ang_z_; // eular angle from quaternion q_z
 
@@ -50,12 +45,6 @@ private:
 	double error_forward_, error_angle_, error_forward_prev_, error_angle_prev_;
 	double I_forward_, I_angle_; // integral part
 	double D_forward_, D_angle_; // derivative part
-
-	// FOR DIAGNOSTICS
-	int curr_state_a, curr_state_f; // 1 for approaching target, -1 for leaving target
-	double minima_a, minima_f, maxima_a, maxima_f;
-	double Kpt_a, Kpt_f;
-	int t;
 
 	void odomCallBack(const nav_msgs::OdometryConstPtr& odomMsg);
     //	void scanCallBack(const sensor_msgs::LaserScan::ConstPtr& scanMsg);
