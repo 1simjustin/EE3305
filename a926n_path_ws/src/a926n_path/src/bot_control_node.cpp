@@ -106,7 +106,11 @@ int main(int argc, char **argv)
   double error_x, error_y;
   double vel_x = 0, vel_heading = 0; // for sending to cmd_vel
   double target_heading;
-  double I_angular, I_linear, D_angular, D_pos; // can be used for PID
+  double I_angular, I_linear, D_angular, D_linear; // can be used for PID
+
+  double p_term_x;
+  double p_term_a;
+  
   ros::Rate rate(1 / dt);                       // makes sure each iteration is at least dt long
   while (ros::ok() && goal_reached == 0)
   {
@@ -124,15 +128,27 @@ int main(int argc, char **argv)
     target_heading = atan2(error_y, error_x); // radians
     error_heading = target_heading - heading; // radians
     // make sure -pi <= error_heading < pi. If else statements can be used becos target_heading and heading are betw -pi and pi.
-    if (error_heading < -M_PI) // M_PI is pi = 3.1415..., defined in math.h
+    while (error_heading < -M_PI) // M_PI is pi = 3.1415..., defined in math.h
       error_heading += 2 * M_PI;
-    if (error_heading > M_PI)
+    while (error_heading > M_PI)
       error_heading -= 2 * M_PI;
 
     // === (b) PID SUMS ===
     // ENTER YOUR CODE HERE
 
+    p_term_x = Kp_x * error_pos;
+    p_term_a = Kp_a * error_heading;
 
+    if (p_term_x > -MAX_LINEAR_VEL && p_term_x < MAX_LINEAR_VEL)
+      I_linear += (error_pos + error_pos_prev) / 2 * dt;
+    if (p_term_a > -MAX_ANGULAR_VEL && p_term_a < MAX_ANGULAR_VEL)
+      I_angular += (error_heading + error_heading_prev) / 2 * dt;
+
+    D_linear = (error_pos - error_pos_prev) / dt;
+    D_angular = (error_heading - error_heading_prev) / dt;
+
+    vel_x = p_term_x + Ki_x * I_linear + Kd_x * D_linear;
+    vel_heading = p_term_a + Ki_a * I_angular + Kd_a * D_linear;
 
     // END YOUR CODE HERE    
     // ROS_INFO("[Bot Control Node]: %f,%f", error_x, error_y); // print example
