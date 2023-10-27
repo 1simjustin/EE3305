@@ -164,6 +164,9 @@ int main(int argc, char **argv)
     if (vel_heading < -MAX_ANGULAR_VEL)
       vel_heading = -MAX_ANGULAR_VEL;
 
+    if (error_heading < -M_PI/6 || error_heading > M_PI/6) // Dont move forward if need to turn
+      vel_x /= 4;
+
     // === (d) MOVE ROBOT ===
     msg_cmd.linear.x = vel_x;
     msg_cmd.angular.z = vel_heading;

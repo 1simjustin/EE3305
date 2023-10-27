@@ -2,15 +2,16 @@
 # Name: Sim Justin
 # NUSNET ID: E0968898
 
-Kp_a: 6
-Ki_a: 1.8
-Kd_a: 0.6
+# Ku 4 Tu 5
+Kp_a: 1.5
+Ki_a: 0
+Kd_a: 0.5
 
-Kp_x: 7
-Ki_x: 1
-Kd_x: 0.5
+Kp_x: 1.5 #2
+Ki_x: 0.5
+Kd_x: 0.5 #1
 
 dt: 0.1
 
-goal_x: 4
-goal_y: 4
+goal_x: 4.5
+goal_y: 4.5
