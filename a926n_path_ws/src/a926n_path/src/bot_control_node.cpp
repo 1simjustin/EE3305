@@ -164,7 +164,7 @@ int main(int argc, char **argv)
     if (vel_heading < -MAX_ANGULAR_VEL)
       vel_heading = -MAX_ANGULAR_VEL;
 
-    if (error_heading < -M_PI/6 || error_heading > M_PI/6) // Dont move forward if need to turn
+    if (error_heading < -M_PI/6 || error_heading > M_PI/6) // Reduce speed if heading error is large
       vel_x /= 4;
 
     // === (d) MOVE ROBOT ===
