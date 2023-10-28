@@ -92,9 +92,14 @@ std::vector<std::array<int, 2>> findPath(int idx_x, int idx_y, int goal_x, int g
     // ---------------------- (3) Search neighbors and queue them if cheaper -------------------------
     // should use for loops, but kept it for beginners to understand
     Cell *cur_cell = &cells[cur_x][cur_y]; // point to current cell
+    
+    bool north_wall = cur_cell->walls[0] < 1;
+    bool west_wall = cur_cell->walls[1] < 1;
+    bool south_wall = cur_cell->walls[2] < 1;
+    bool east_wall = cur_cell->walls[3] < 1;
 
     // === (a) check NORTH neighbor ===
-    if (!cur_cell->walls[0] && cur_x < MAP_MAX_X - 1)
+    if (!north_wall && cur_x < MAP_MAX_X - 1)
     {                                              // north wall does not exist AND north cell exists ==> north cell is accessible
       Node *north_node = &nodes[cur_x + 1][cur_y]; // point to current node
       int new_north_cell_cost = cur_cost + 1;
@@ -109,7 +114,7 @@ std::vector<std::array<int, 2>> findPath(int idx_x, int idx_y, int goal_x, int g
     }
 
     // === (b) check WEST neighbor ===
-    if (!cur_cell->walls[1] && cur_y < MAP_MAX_Y - 1)
+    if (!west_wall && cur_y < MAP_MAX_Y - 1)
     {                                             // west wall does not exist AND west cell exists ==> west cell is accessible
       Node *west_node = &nodes[cur_x][cur_y + 1]; // point to current node
       int new_west_cell_cost = cur_cost + 1;
@@ -124,7 +129,7 @@ std::vector<std::array<int, 2>> findPath(int idx_x, int idx_y, int goal_x, int g
     }
 
     // === (c) check SOUTH neighbor ===
-    if (!cur_cell->walls[2] && cur_x > 0)
+    if (!south_wall && cur_x > 0)
     {                                              // south wall does not exist AND south cell exists ==> south cell is accessible
       Node *south_node = &nodes[cur_x - 1][cur_y]; // point to current node
       int new_south_cell_cost = cur_cost + 1;
@@ -139,7 +144,7 @@ std::vector<std::array<int, 2>> findPath(int idx_x, int idx_y, int goal_x, int g
     }
 
     // === (d) check EAST neighbor ===
-    if (!cur_cell->walls[3] && cur_y > 0)
+    if (!east_wall && cur_y > 0)
     {                                             // east wall does not exist AND east cell exists ==> east cell is accessible
       Node *east_node = &nodes[cur_x][cur_y - 1]; // point to current node
       int new_east_cell_cost = cur_cost + 1;
@@ -154,7 +159,7 @@ std::vector<std::array<int, 2>> findPath(int idx_x, int idx_y, int goal_x, int g
     }
 
     // === (e) check NORTHWEST neighbor ===
-    if (!cur_cell->walls[0] && !cur_cell->walls[1] && cur_x < MAP_MAX_X - 1 && cur_y < MAP_MAX_Y - 1)
+    if (!north_wall && !west_wall && cur_x < MAP_MAX_X - 1 && cur_y < MAP_MAX_Y - 1)
     { // north wall does not exist AND west wall does not exist AND north cell exists AND west cell exists ==> northwest cell is accessible
       Cell *nw_cell = &cells[cur_x + 1][cur_y + 1];
       if (!nw_cell->walls[2] && !nw_cell->walls[3]) {
@@ -172,7 +177,7 @@ std::vector<std::array<int, 2>> findPath(int idx_x, int idx_y, int goal_x, int g
     }
 
     // === (f) check SOUTHWEST neighbor ===
-    if (!cur_cell->walls[1] && !cur_cell->walls[2] && cur_x > 0 && cur_y < MAP_MAX_Y - 1)
+    if (!west_wall && !south_wall && cur_x > 0 && cur_y < MAP_MAX_Y - 1)
     { // west wall does not exist AND south wall does not exist AND south cell exists AND west cell exists ==> southwest cell is accessible
       Cell *sw_cell = &cells[cur_x - 1][cur_y + 1];
       if (!sw_cell->walls[0] && !sw_cell->walls[3]) {
@@ -190,7 +195,7 @@ std::vector<std::array<int, 2>> findPath(int idx_x, int idx_y, int goal_x, int g
     }
 
     // === (g) check SOUTHEAST neighbor ===
-    if (!cur_cell->walls[2] && !cur_cell->walls[3] && cur_x > 0 && cur_y > 0)
+    if (!south_wall && !east_wall && cur_x > 0 && cur_y > 0)
     { // south wall does not exist AND east wall does not exist AND south cell exists AND east cell exists ==> southeast cell is accessible
       Cell *se_cell = &cells[cur_x - 1][cur_y - 1];
       if (!se_cell->walls[0] && !se_cell->walls[1]) {
@@ -208,7 +213,7 @@ std::vector<std::array<int, 2>> findPath(int idx_x, int idx_y, int goal_x, int g
     }
 
     // === (h) check NORTHEAST neighbor ===
-    if (!cur_cell->walls[0] && !cur_cell->walls[3] && cur_x < MAP_MAX_X - 1 && cur_y > 0)
+    if (!north_wall && !east_wall && cur_x < MAP_MAX_X - 1 && cur_y > 0)
     { // north wall does not exist AND east wall does not exist AND north cell exists AND east cell exists ==> northeast cell is accessible
       Cell *ne_cell = &cells[cur_x + 1][cur_y - 1];
       if (!ne_cell->walls[1] && !ne_cell->walls[2]) {
