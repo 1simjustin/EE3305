@@ -15,7 +15,8 @@ const int MAP_MAX_Y = 10;
 
 struct Cell
 {
-  bool walls[4] = {false}; // defaulted to no walls
+  // -1 for unknown, 0 for no wall, 1 for wall
+  int walls[4] = {-1, -1, -1, -1};
 };
 Cell cells[MAP_MAX_X][MAP_MAX_Y];
 
@@ -233,28 +234,28 @@ void fillWalls(int idx_x, int idx_y, std::string &dbg_str)
 
   // walls are along grid lines, not center of grid cells
   // world's north is always in world's +x direction
-  bool north_has_wall = north_scan_range <= 1;
+  int north_has_wall = north_scan_range <= 1 ? 1 : 0;
   cells[idx_x][idx_y].walls[0] = north_has_wall;       // set current cell's north wall as occupied
   if (idx_x < MAP_MAX_X - 1)                           // if not at northmost part of the map
     cells[idx_x + 1][idx_y].walls[2] = north_has_wall; // set north cell's south wall as occupied
   dbg_str += "N(" + std::string(north_has_wall ? "yes" : " no") + ", dist=" + std::to_string(north_scan_range) + "), ";
 
   // world's west is always in world's +y direction
-  bool west_has_wall = west_scan_range <= 1;
+  int west_has_wall = west_scan_range <= 1 ? 1 : 0;
   cells[idx_x][idx_y].walls[1] = west_has_wall;       // set current cell's west wall as occupied
   if (idx_y < MAP_MAX_Y - 1)                          // if not at westmost part of the map
     cells[idx_x][idx_y + 1].walls[3] = west_has_wall; // set west cell's east wall as occupied
   dbg_str += "W(" + std::string(west_has_wall ? "yes" : " no") + ", dist=" + std::to_string(west_scan_range) + "), ";
 
   // world's south is always in world's -x direction
-  bool south_has_wall = south_scan_range <= 1;
+  int south_has_wall = south_scan_range <= 1 ? 1 : 0;
   cells[idx_x][idx_y].walls[2] = south_has_wall;       // set current cell's south wall as occupied
   if (idx_x > 1)                                       // if not at southmost part of the map
     cells[idx_x - 1][idx_y].walls[0] = south_has_wall; // set south cell's north wall as occupied
   dbg_str += "S(" + std::string(south_has_wall ? "yes" : " no") + ", dist=" + std::to_string(south_scan_range) + "), ";
 
   // world's east is always in world's -y direction
-  bool east_has_wall = east_scan_range <= 1;
+  int east_has_wall = east_scan_range <= 1 ? 1 : 0;
   cells[idx_x][idx_y].walls[3] = east_has_wall;       // set current cell's east wall as occupied
   if (idx_y > 1)                                      // if not at eastmost part of the map
     cells[idx_x][idx_y - 1].walls[1] = east_has_wall; // set east cell's west wall as occupied
