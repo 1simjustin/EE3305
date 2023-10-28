@@ -156,29 +156,33 @@ std::vector<std::array<int, 2>> findPath(int idx_x, int idx_y, int goal_x, int g
     if (!cur_cell->walls[0] && !cur_cell->walls[1] && cur_x < MAP_MAX_X - 1 && cur_y < MAP_MAX_Y - 1)
     { // north wall does not exist AND west wall does not exist AND north cell exists AND west cell exists ==> northwest cell is accessible
       Node *northwest_node = &nodes[cur_x + 1][cur_y + 1];
-      int new_northwest_cell_cost = cur_cost + 0.707; // 0.707 here is sqrt(2)/2, which is the cost of moving diagonally
-      int old_northwest_cell_cost = northwest_node->cost;
-      if (old_northwest_cell_cost > new_northwest_cell_cost)
-      { // northwest cell is cheaper to get there from current cell
-        // update parent and cost information for northwest cell, and queue it
-        northwest_node->cost = new_northwest_cell_cost;
-        northwest_node->parent = cur_node;
-        queue.push_back(northwest_node);
+      if (!northwest_node->walls[2] && !northwest_node->walls[3]) {
+        int new_northwest_cell_cost = cur_cost + 0.707; // 0.707 here is sqrt(2)/2, which is the cost of moving diagonally
+        int old_northwest_cell_cost = northwest_node->cost;
+        if (old_northwest_cell_cost > new_northwest_cell_cost)
+        { // northwest cell is cheaper to get there from current cell
+          // update parent and cost information for northwest cell, and queue it
+          northwest_node->cost = new_northwest_cell_cost;
+          northwest_node->parent = cur_node;
+          queue.push_back(northwest_node);
+        }
       }
     }
 
-    // === (f) check NORTHEAST neighbor ===
-    if (!cur_cell->walls[0] && !cur_cell->walls[3] && cur_x < MAP_MAX_X - 1 && cur_y > 0)
-    { // north wall does not exist AND east wall does not exist AND north cell exists AND east cell exists ==> northeast cell is accessible
-      Node *northeast_node = &nodes[cur_x + 1][cur_y - 1];
-      int new_northeast_cell_cost = cur_cost + 0.707; // 0.707 here is sqrt(2)/2, which is the cost of moving diagonally
-      int old_northeast_cell_cost = northeast_node->cost;
-      if (old_northeast_cell_cost > new_northeast_cell_cost)
-      { // northeast cell is cheaper to get there from current cell
-        // update parent and cost information for northeast cell, and queue it
-        northeast_node->cost = new_northeast_cell_cost;
-        northeast_node->parent = cur_node;
-        queue.push_back(northeast_node);
+    // === (f) check SOUTHWEST neighbor ===
+    if (!cur_cell->walls[1] && !cur_cell->walls[2] && cur_x > 0 && cur_y < MAP_MAX_Y - 1)
+    { // west wall does not exist AND south wall does not exist AND west cell exists AND south cell exists ==> southwest cell is accessible
+      Node *southwest_node = &nodes[cur_x - 1][cur_y + 1];
+      if (!southwest_node->walls[0] && !southwest_node->walls[3]) {
+        int new_southwest_cell_cost = cur_cost + 0.707; // 0.707 here is sqrt(2)/2, which is the cost of moving diagonally
+        int old_southwest_cell_cost = southwest_node->cost;
+        if (old_southwest_cell_cost > new_southwest_cell_cost)
+        { // southwest cell is cheaper to get there from current cell
+          // update parent and cost information for southwest cell, and queue it
+          southwest_node->cost = new_southwest_cell_cost;
+          southwest_node->parent = cur_node;
+          queue.push_back(southwest_node);
+        }
       }
     }
 
@@ -186,29 +190,33 @@ std::vector<std::array<int, 2>> findPath(int idx_x, int idx_y, int goal_x, int g
     if (!cur_cell->walls[2] && !cur_cell->walls[3] && cur_x > 0 && cur_y > 0)
     { // south wall does not exist AND east wall does not exist AND south cell exists AND east cell exists ==> southeast cell is accessible
       Node *southeast_node = &nodes[cur_x - 1][cur_y - 1];
-      int new_southeast_cell_cost = cur_cost + 0.707; // 0.707 here is sqrt(2)/2, which is the cost of moving diagonally
-      int old_southeast_cell_cost = southeast_node->cost;
-      if (old_southeast_cell_cost > new_southeast_cell_cost)
-      { // southeast cell is cheaper to get there from current cell
-        // update parent and cost information for southeast cell, and queue it
-        southeast_node->cost = new_southeast_cell_cost;
-        southeast_node->parent = cur_node;
-        queue.push_back(southeast_node);
+      if (!southeast_node->walls[0] && !southeast_node->walls[1]) {
+        int new_southeast_cell_cost = cur_cost + 0.707; // 0.707 here is sqrt(2)/2, which is the cost of moving diagonally
+        int old_southeast_cell_cost = southeast_node->cost;
+        if (old_southeast_cell_cost > new_southeast_cell_cost)
+        { // southeast cell is cheaper to get there from current cell
+          // update parent and cost information for southeast cell, and queue it
+          southeast_node->cost = new_southeast_cell_cost;
+          southeast_node->parent = cur_node;
+          queue.push_back(southeast_node);
+        }
       }
     }
 
-    // === (h) check SOUTHWEST neighbor ===
-    if (!cur_cell->walls[2] && !cur_cell->walls[1] && cur_x > 0 && cur_y < MAP_MAX_Y - 1)
-    { // south wall does not exist AND west wall does not exist AND south cell exists AND west cell exists ==> southwest cell is accessible
-      Node *southwest_node = &nodes[cur_x - 1][cur_y + 1];
-      int new_southwest_cell_cost = cur_cost + 0.707; // 0.707 here is sqrt(2)/2, which is the cost of moving diagonally
-      int old_southwest_cell_cost = southwest_node->cost;
-      if (old_southwest_cell_cost > new_southwest_cell_cost)
-      { // southwest cell is cheaper to get there from current cell
-        // update parent and cost information for southwest cell, and queue it
-        southwest_node->cost = new_southwest_cell_cost;
-        southwest_node->parent = cur_node;
-        queue.push_back(southwest_node);
+    // === (h) check NORTHEAST neighbor ===
+    if (!cur_cell->walls[0] && !cur_cell->walls[3] && cur_x < MAP_MAX_X - 1 && cur_y > 0)
+    { // north wall does not exist AND east wall does not exist AND north cell exists AND east cell exists ==> northeast cell is accessible
+      Node *northeast_node = &nodes[cur_x + 1][cur_y - 1];
+      if (!northeast_node->walls[1] && !northeast_node->walls[2]) {
+        int new_northeast_cell_cost = cur_cost + 0.707; // 0.707 here is sqrt(2)/2, which is the cost of moving diagonally
+        int old_northeast_cell_cost = northeast_node->cost;
+        if (old_northeast_cell_cost > new_northeast_cell_cost)
+        { // northeast cell is cheaper to get there from current cell
+          // update parent and cost information for northeast cell, and queue it
+          northeast_node->cost = new_northeast_cell_cost;
+          northeast_node->parent = cur_node;
+          queue.push_back(northeast_node);
+        }
       }
     }
   }
