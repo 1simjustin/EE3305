@@ -93,10 +93,10 @@ std::vector<std::array<int, 2>> findPath(int idx_x, int idx_y, int goal_x, int g
     // should use for loops, but kept it for beginners to understand
     Cell *cur_cell = &cells[cur_x][cur_y]; // point to current cell
     
-    bool north_wall = cur_cell->walls[0] < 1;
-    bool west_wall = cur_cell->walls[1] < 1;
-    bool south_wall = cur_cell->walls[2] < 1;
-    bool east_wall = cur_cell->walls[3] < 1;
+    bool north_wall = cur_cell->walls[0] == 1;
+    bool west_wall = cur_cell->walls[1] == 1;
+    bool south_wall = cur_cell->walls[2] == 1;
+    bool east_wall = cur_cell->walls[3] == 1;
 
     // === (a) check NORTH neighbor ===
     if (!north_wall && cur_x < MAP_MAX_X - 1)
