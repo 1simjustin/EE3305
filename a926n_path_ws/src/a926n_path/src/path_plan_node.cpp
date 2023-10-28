@@ -71,14 +71,14 @@ std::vector<std::array<int, 2>> findPath(int idx_x, int idx_y, int goal_x, int g
   while (!queue.empty())
   {
     // ---------------------- (1) Poll the queue -------------------------
-    Node *cur_node = queue.front(); // Create a pointer to the node representing the robot's current cell
+    Node *cur_node = queue.front(); // Create a pointer to the node the path is at
     queue.pop_front();              // Remove the node form the queue (we have completed that portion of the path)
-    int cur_x = cur_node->x;        // Robot's current cell x position
-    int cur_y = cur_node->y;        // Robot's current cell y position
+    int cur_x = cur_node->x;        // Node's current cell x position
+    int cur_y = cur_node->y;        // Node's current cell y position
     int cur_cost = cur_node->cost;
 
     // ---------------------- (2) Find the path if goal is found, and break loop -------------------------
-    if (cur_x == goal_x && cur_y == goal_y)   // Check if the robot is at the goal
+    if (cur_x == goal_x && cur_y == goal_y)   // Check if the path has reached the goal
     {
       Node *node = cur_node;
       do
