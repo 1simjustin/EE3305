@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<!--
+    EE3305/ME3243
+    Name: Sim Justin
+    NUSNET ID: E0968898
+-->
+
+<launch>
+    <arg name="student_pkg" value="a926n_path"/>
+
+    <!-- Launch the parameters. -->
+    <rosparam command="load" file="$(find a926n_path)/config/config.yaml"/>
+
+    <!-- Launch all nodes in the student's package. -->
+    <node pkg="$(arg student_pkg)" type="range_detect_node" name="range_detect_node" output="screen"/>
+    <node pkg="$(arg student_pkg)" type="path_plan_node" name="path_plan_node" output="screen"/>
+    <node pkg="$(arg student_pkg)" type="bot_control_node" name="bot_control_node" output="screen"/>
+</launch>
